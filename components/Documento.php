@@ -8,8 +8,111 @@ $query="SELECT * from proyecto where id_proyecto='$id'";
 $resultado = mysqli_query($conexion, $query);
 
 require('../pdf/fdpf/fpdf.php');
+
 class PDF extends FPDF
 {
+
+    var $widths;
+    var $aligns;
+    function SetWidths($w)
+{
+    //Set the array of column widths
+    
+    $this->widths=$w;
+}
+
+function SetAligns($a)
+{
+    //Set the array of column alignments
+    $this->aligns=$a;
+}
+
+function Row($data)
+{
+    //Calculate the height of the row
+    $nb=0;
+    for($i=0;$i<count($data);$i++)
+        $nb=max($nb,$this->NbLines($this->widths[$i],$data[$i]));
+    $h=5*$nb;
+    //Issue a page break first if needed
+    $this->CheckPageBreak($h);
+    //Draw the cells of the row
+    for($i=0;$i<count($data);$i++)
+    {
+        $w=$this->widths[$i];
+        $a=isset($this->aligns[$i]) ? $this->aligns[$i] : 'C';
+        //Save the current position
+        $x=$this->GetX();
+        $y=$this->GetY();
+        //Draw the border
+        $this->Rect($x,$y,$w,$h);
+        //Print the text
+      
+        $this->MultiCell($w,5,$data[$i],0,$a);
+        //Put the position to the right of the cell
+        $this->SetXY($x+$w,$y);
+    }
+    //Go to the next line
+    $this->Ln($h);
+}
+
+function CheckPageBreak($h)
+{
+    //If the height h would cause an overflow, add a new page immediately
+    if($this->GetY()+$h>$this->PageBreakTrigger)
+        $this->AddPage($this->CurOrientation);
+}
+
+function NbLines($w,$txt)
+{
+    //Computes the number of lines a MultiCell of width w will take
+    $cw=&$this->CurrentFont['cw'];
+    if($w==0)
+        $w=$this->w-$this->rMargin-$this->x;
+    $wmax=($w-2*$this->cMargin)*1000/$this->FontSize;
+    $s=str_replace("\r",'',$txt);
+    $nb=strlen($s);
+    if($nb>0 and $s[$nb-1]=="\n")
+        $nb--;
+    $sep=-1;
+    $i=0;
+    $j=0;
+    $l=0;
+    $nl=1;
+    while($i<$nb)
+    {
+        $c=$s[$i];
+        if($c=="\n")
+        {
+            $i++;
+            $sep=-1;
+            $j=$i;
+            $l=0;
+            $nl++;
+            continue;
+        }
+        if($c==' ')
+            $sep=$i;
+        $l+=$cw[$c];
+        if($l>$wmax)
+        {
+            if($sep==-1)
+            {
+                if($i==$j)
+                    $i++;
+            }
+            else
+                $i=$sep+1;
+            $sep=-1;
+            $j=$i;
+            $l=0;
+            $nl++;
+        }
+        else
+            $i++;
+    }
+    return $nl;
+}
    /* function Header()
     {
        // global $title;
@@ -291,6 +394,62 @@ class PDF extends FPDF
 
         $this -> actividades();
         $this-> metodologia();
+        $this -> ln();
+        
+        $this->ChapterTitle('1.6.3','HERRAMIENTAS');
+        $this->SetFont('Times','',12);
+        $this->MultiCell(0,5,utf8_decode('En este proyecto de hará el uso de las siguientes herramientas: '));
+        $this -> ln();
+        $herramientas = "SELECT * from herramienta where herramienta.id_proyecto = '$id'";
+        $rh = mysqli_query($conexion, $herramientas);
+        $conh = 1;
+        while($rowH = $rh->fetch_assoc()){
+            $this->MultiCellBlt($column_width,5,$conh.') ',$rowH['contenido']);
+            $this->ln();
+            $conh++;
+        }
+        $this->tablaguia();
+        $this-> ln();
+        $this->ChapterTitle('1.8','ASIGNACION DE RECURSOS PARA LA AUDITORIA');
+        $this->ChapterTitle('1.8.1','RECURSOS TECNICOS');
+        $this->SetFont('Times','',12);
+        $this->MultiCell(0,5,utf8_decode('Se utilizaran los siguientes recursos técnicos: '));
+        $this-> ln();
+        $tecnicos = "SELECT * from tecnicos where tecnicos.id_proyecto='$id'";
+        $rtec = mysqli_query($conexion, $tecnicos);
+        while($rowtec = $rtec->fetch_assoc()){
+            $this->MultiCellBlt($column_width,5,chr(149),$rowtec['recurso']);
+            $this->Ln();
+        }
+
+        $this->ChapterTitle('1.8.2','RECURSOS ECONOMICOS');
+        $this->SetFont('Times','',12);
+        $this->MultiCell(0,5,utf8_decode('La siguiente tabla demuestra la derogación de los gastos quegenera para la elaboraciónde este proyecto de auditoría. '));
+        $this-> ln();
+        $this->SetX(35);
+    $this->SetFont('Times','',12);
+    $this->SetFillColor(0,0,0);
+    $this->SetTextColor(255,255,255);
+    $this->Cell(70,7,'Descripcion',1,0,'C',true);
+    $this->Cell(70,7,'Costo(Bs.)',1,1,'C',true);
+    $economico = "SELECT * from economico where economico.id_proyecto='$id'";
+    $reco = mysqli_query($conexion,$economico);
+    $sumaEco=0;
+    while($rowEco=$reco->fetch_assoc()){
+        $this->SetTextColor(0,0,0);
+        $this->SetX(35);
+        $this->Cell(70,7,$rowEco['recurso'],1,0,'C',0);
+    $this->Cell(70,7,$rowEco['costo'],1,1,'C',0);
+
+    $sumaEco = $rowEco['costo']+$sumaEco;
+    }
+    $this->SetX(35);
+    $this->SetFillColor(0,0,0);
+    $this->SetTextColor(255,255,255);
+    $this->Cell(70,7,'COSTO TOTAL ',1,0,'C',true);
+    $this->Cell(70,7,$sumaEco,1,1,'C',true);
+       
+       
         
 
 
@@ -355,6 +514,37 @@ class PDF extends FPDF
 
     }
 
+
+
+    function tablaguia(){
+        include("Conexion.php") ;
+        $id=$_REQUEST['id_proyecto'];
+        $this->ChapterTitle('1.7','GUIAS DE AUDITORIA');
+        $guia = "SELECT * from guia where guia.id_proyecto='$id' ";
+        $rguia = mysqli_query($conexion, $guia);
+        while($rowGuia = $rguia->fetch_assoc()){
+           
+            $this->SetWidths(array(130,50));
+            $this->Row(array('Punto a ser evaluado: '.$rowGuia['punto'],'Guia: '.$rowGuia['guia']));
+            $this->SetWidths(array(20,30,30,30,30,10,30));
+            $this->Row(array('Codigo',' Actividad que sera evaluado','Procedimien tos de auditoria','Herramientas que seran utilizados','Tecnicas que seran utilizados','%','Observaciones'));
+        
+            $this->SetWidths(array(20,30,30,30,30,10,30));
+            $this->Row(array($rowGuia['codigo'],$rowGuia['actividad'],$rowGuia['procedimiento'],$rowGuia['herramienta'],$rowGuia['tecnica'],$rowGuia['porcentaje'],$rowGuia['observacion']));
+            $this-> ln();
+        }
+
+
+
+    }
+
+
+
+
+
+
+    
+
     function PrintChapter($title)
     {
         $this->AddPage();
@@ -363,12 +553,18 @@ class PDF extends FPDF
         $this->ChapterBody();
     }
     }
+
+    //mc_table
+
+
+
     
     $pdf = new PDF();
  
 
     $pdf->PrintChapter('PLANEACION DE LA AUDITORIA');
-  
+    
+   
     $pdf->Output();
 
 ?>

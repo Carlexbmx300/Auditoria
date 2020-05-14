@@ -1,6 +1,6 @@
 <?php
 $id = $_REQUEST['id_proyecto'];
-$query= "SELECT count(puntos.id_proyecto) from puntos where puntos.id_proyecto='$id'";
+$query= "SELECT count(herramienta.id_proyecto) from herramienta where herramienta.id_proyecto='$id'";
 $respuesta = mysqli_query($conexion, $query);
 $row= $respuesta->fetch_array();
 ?>
@@ -9,7 +9,7 @@ $row= $respuesta->fetch_array();
 <div class="accordion">
     <div class="accordion-item">
             <div class="accordion-item-header">
-                <h4>PUNTOS A SER EVALUADOS</h4>
+                <h4>HERRAMIENTAS</h4>
             </div>
             <div class="accordion-item-body">
             <div class="accordion-item-body-content">
@@ -18,7 +18,7 @@ $row= $respuesta->fetch_array();
             ?>
                 <div class="row">
                     <div class="col-xl-6 col-4">
-                        <p class="mt-3">PUNTOS INSERTADOS</p>
+                        <p class="mt-3">HERRAMIENTAS INSERTADOS</p>
                     </div>
                     <div class="col-xl-2 col-3">
                         <a href="" class="btn btn-warning">MODIFICAR</a>
@@ -34,7 +34,7 @@ $row= $respuesta->fetch_array();
             ?>
            
                 <div class="row">
-                    <form action="components/ProcesoCrearPunto.php" method="post">
+                    <form action="components/ProcesoCrearHerramienta.php" method="post">
                       
                         
                         
@@ -43,16 +43,16 @@ $row= $respuesta->fetch_array();
                      
                         <div class="row">
                             <div class="col-6">
-                                <button type="button" class="btn btn-success" id="addP">Añadir punto</button>
+                                <button type="button" class="btn btn-success" id="addH">Añadir herramienta</button>
                             </div>
                             <div class="col-6">
-                            <button type="button" class="btn btn-success" id="removeP">Quitar punto</button>
+                            <button type="button" class="btn btn-success" id="removeH">Quitar herramienta</button>
                             </div>
                         </div>
-                        <div id="dynamic_fieldP">
+                        <div id="dynamic_fieldH">
 
                         </div>
-                        <input type="text" id="numeroP" name="numeroP">
+                        <input type="text" id="numeroH" name="numeroH">
                      
                             
                             <input type="text" value="<?php echo $id ?>" name="ida">
@@ -60,9 +60,9 @@ $row= $respuesta->fetch_array();
 
                     </form>
                 </div>
-                <?php
+              <?php
                 }
-                ?>
+              ?>
             </div>
             </div>
 

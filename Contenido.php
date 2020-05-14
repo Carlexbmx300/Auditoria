@@ -23,6 +23,9 @@
              include('components/Antecedentes.php');
              include('components/Origen.php');
              include('components/PuntosEvaluados.php');
+             include('components/Herramientas.php');
+             include('components/Guias.php');
+             include('components/Recurso.php');
              
        ?>
 

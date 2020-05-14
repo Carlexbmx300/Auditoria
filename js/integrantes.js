@@ -89,6 +89,53 @@ $(document).ready(function (){
         $('#numeroP').val(l) ;
 
       });
+
+      var h = 0 ;
+      $('#addH').click(function(){
+        h++;
+        $('#dynamic_fieldH').append('<div id="he'+h+'"><div class="md-form col-12"><textarea id="form7" name="herramienta'+h+'" class="md-textarea form-control" rows="3"></textarea><label for="form7">Herramienta '+h+'</label></div><div>');
+        $('#numeroH').val(h) ;
+ 
+      });
+
+      $('#removeH').click(function(){
+        var num =  $('#numeroH').val();
+        $('#he'+num+'').remove();
+        h--;
+        $('#numeroH').val(h) ;
+
+      });
+
+      var q = 0 ;
+      $('#addTec').click(function(){
+        q++;
+        $('#dynamic_fieldTec').append('<div id="tec'+q+'"> <div class="md-form"><input type="text" id="form1" class="form-control" name="tecnico'+q+'" required><label for="form1">Recurso tecnico '+q+'</label></div><div>');
+        $('#numeroTec').val(q) ;
+ 
+      });
+
+      $('#removeTec').click(function(){
+        var num =  $('#numeroTec').val();
+        $('#tec'+num+'').remove();
+        q--;
+        $('#numeroTec').val(q) ;
+
+      });
+      var w = 0 ;
+      $('#addEco').click(function(){
+        w++;
+        $('#dynamic_fieldEco').append('<div id="eco'+w+'"> <div class="md-form"><input type="text" id="form1" class="form-control" name="economico'+w+'" required><label for="form1">Recurso economico '+w+'</label></div><div class="md-form"><input type="text" id="form1" class="form-control" name="costo'+w+'" required><label for="form1">Costo '+w+'</label></div><div>');
+        $('#numeroEco').val(w) ;
+ 
+      });
+
+      $('#removeEco').click(function(){
+        var num =  $('#numeroEco').val();
+        $('#eco'+num+'').remove();
+        w--;
+        $('#numeroEco').val(w) ;
+
+      });
     
     });
 
