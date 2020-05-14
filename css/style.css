@@ -1,0 +1,144 @@
+.input-file{
+    position: relative;
+   height: 50px;
+    width: 150px;
+    background-color: #FFBD24;
+    border-radius: 7px;
+}
+#file{
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+ }
+ #texto{
+     text-align: center;
+     color: #1A3F6B;
+     font-size: 20px;
+     padding-top: 10px;
+ }
+ .preview {
+   
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+  }
+
+  .preview img{
+      width: 200px;
+      
+  }
+
+  .logo img{
+      width: 400px;
+  }
+
+  .operaciones{
+      width: 200px;
+  }
+
+.operaciones li
+{
+    width: 200px;
+    height: 50px;
+    list-style: none;
+    margin-bottom: 20px;
+    background-color: #FFBD24;
+    text-align: center;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.operaciones li a {
+    padding: 10px;
+    color: black;
+}#dynamic_field{
+    width: 1000px;
+}
+
+/* estilos de acordeon */
+
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #34495e;
+  color: #fff;
+}
+h1 {
+  text-align: center;
+  margin: 2rem 0;
+  font-size: 2.5rem;
+}
+
+.accordion {
+  width: 100%;
+  max-width: 1000px;
+  margin: 2rem auto;
+}
+
+.accordion textarea{
+
+    width: 900px;
+}
+.accordion-item {
+  background-color: #fff;
+  color: #111;
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.25);
+}
+.accordion-item-header {
+  padding: 0.5rem 3rem 0.5rem 1rem;
+  min-height: 3.5rem;
+  line-height: 1.25rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+.accordion-item-header::after {
+  content: "\002B";
+  font-size: 2rem;
+  position: absolute;
+  right: 1rem;
+}
+.accordion-item-header.active::after {
+  content: "\2212";
+}
+.accordion-item-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+.accordion-item-body-content {
+  padding: 1rem;
+  line-height: 1.5rem;
+  border-top: 1px solid;
+  border-image: linear-gradient(to right, transparent, #34495e, transparent) 1;
+}
+
+@media(max-width:767px) {
+  html {
+    font-size: 14px;
+  }
+#dynamic_field{
+    width: 350px;
+}
+
+.accordion textarea{
+    width: 350px;
+}
+
+  
+}
