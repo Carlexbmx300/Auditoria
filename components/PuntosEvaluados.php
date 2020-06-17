@@ -52,10 +52,10 @@ $row= $respuesta->fetch_array();
                         <div id="dynamic_fieldP">
 
                         </div>
-                        <input type="text" id="numeroP" name="numeroP">
+                        <input type="hidden" id="numeroP" name="numeroP">
                      
                             
-                            <input type="text" value="<?php echo $id ?>" name="ida">
+                            <input type="hidden" value="<?php echo $id ?>" name="ida">
                         <button type="submit" class="btn btn-success">ENVIAR</button>
 
                     </form>

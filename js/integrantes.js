@@ -136,6 +136,67 @@ $(document).ready(function (){
         $('#numeroEco').val(w) ;
 
       });
+
+      var a = 0 ;
+      $('#addA').click(function(){
+        a++;
+        $('#dynamic_fieldA').append('<div id="asp'+a+'"> <div class="md-form"><input type="text" id="form1" class="form-control" name="aspecto'+a+'" required><label for="form1">Aspecto '+a+'</label></div><div class="md-form"><input type="text" id="form1" class="form-control" name="porcentaje'+a+'" required><label for="form1">Porcentaje '+a+'</label></div><div>');
+        $('#numeroA').val(a) ;
+ 
+      });
+
+      $('#removeA').click(function(){
+        var num =  $('#numeroA').val();
+        $('#asp'+num+'').remove();
+        a--;
+        $('#numeroA').val(a) ;
+
+      });
+      var p = 0 ;
+      $('#addAlc').click(function(){
+        p++;
+        $('#dynamic_fieldAlc').append('<div id="Alc'+p+'"> <div class="md-form"><input type="text" id="form1" class="form-control" name="alcance'+p+'" required><label for="form1">Alcance '+p+'</label></div><div>');
+        $('#numeroAlc').val(p) ;
+ 
+      });
+
+      $('#removeAlc').click(function(){
+        var num =  $('#numeroAlc').val();
+        $('#Alc'+num+'').remove();
+        p--;
+        $('#numeroAlc').val(p) ;
+
+      });
+      var o = 0 ;
+      $('#addobj').click(function(){
+        o++;
+        $('#dynamic_fieldobj').append('<div id="OBJ'+o+'"> <div class="md-form"><input type="text" id="form1" class="form-control" name="objetivo'+o+'" required><label for="form1">Objetivo '+o+'</label></div><div>');
+        $('#numeroobj').val(o) ;
+ 
+      });
+
+      $('#removeobj').click(function(){
+        var num =  $('#numeroobj').val();
+        $('#OBJ'+num+'').remove();
+        o--;
+        $('#numeroobj').val(o) ;
+
+      });
+      var f = 0 ;
+      $('#addinf').click(function(){
+        f++;
+        $('#dynamic_fieldinf').append('<div id="INF'+f+'"> <div class="md-form"><input type="text" id="form1" class="form-control" name="informe'+f+'" required><label for="form1">Informe '+f+'</label></div><div>');
+        $('#numeroinf').val(f) ;
+ 
+      });
+
+      $('#removeinf').click(function(){
+        var num =  $('#numeroinf').val();
+        $('#INF'+num+'').remove();
+        f--;
+        $('#numeroinf').val(f) ;
+
+      });
     
     });
 

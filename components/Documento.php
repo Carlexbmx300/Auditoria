@@ -11,6 +11,7 @@ require('../pdf/fdpf/fpdf.php');
 
 class PDF extends FPDF
 {
+    
 
     var $widths;
     var $aligns;
@@ -113,6 +114,7 @@ function NbLines($w,$txt)
     }
     return $nl;
 }
+
    /* function Header()
     {
        // global $title;
@@ -133,18 +135,105 @@ function NbLines($w,$txt)
         // Line break
         $this->Ln(10);
     }*/
-    
-    function Footer()
-    {
-        // Position at 1.5 cm from bottom
-        $this->SetY(-15);
-        // Arial italic 8
-        $this->SetFont('Arial','I',8);
-        // Text color in gray
-        $this->SetTextColor(128);
-        // Page number
-        $this->Cell(0,10,'Page '.$this->PageNo(),0,0,'C');
+    protected $_toc=array();
+    protected $_numbering=false;
+    protected $_numberingFooter=false;
+    protected $_numPageNum=1;
+
+    function AddPage($orientation='', $format='', $rotation=0) {
+        parent::AddPage($orientation,$format,$rotation);
+        if($this->_numbering)
+            $this->_numPageNum++;
     }
+
+    function startPageNums() {
+        $this->_numbering=true;
+        $this->_numberingFooter=true;
+    }
+
+    function stopPageNums() {
+        $this->_numbering=false;
+    }
+
+    function numPageNo() {
+        return $this->_numPageNum;
+    }
+
+    function TOC_Entry($txt, $level=0) {
+        $this->_toc[]=array('t'=>$txt,'l'=>$level,'p'=>$this->numPageNo());
+    }
+
+    function insertTOC( $location=1,
+                        $labelSize=20,
+                        $entrySize=10,
+                        $tocfont='Times',
+                        $label='INDICE'
+                        ) {
+        //make toc at end
+        $this->stopPageNums();
+        $this->AddPage();
+        $tocstart=$this->page;
+
+        $this->SetFont($tocfont,'B',$labelSize);
+        $this->Cell(0,5,$label,0,1,'C');
+        $this->Ln(10);
+
+        foreach($this->_toc as $t) {
+
+            //Offset
+            $level=$t['l'];
+            if($level>0)
+                $this->Cell($level*8);
+            $weight='';
+            if($level==0)
+                $weight='B';
+            $str=$t['t'];
+            $this->SetFont($tocfont,$weight,$entrySize);
+            $strsize=$this->GetStringWidth($str);
+            $this->Cell($strsize+2,$this->FontSize+2,$str);
+
+            //Filling dots
+            $this->SetFont($tocfont,'',$entrySize);
+            $PageCellSize=$this->GetStringWidth($t['p'])+2;
+            $w=$this->w-$this->lMargin-$this->rMargin-$PageCellSize-($level*8)-($strsize+2);
+            $nb=$w/$this->GetStringWidth('.');
+            $dots=str_repeat('.',$nb);
+            $this->Cell($w,$this->FontSize+2,$dots,0,0,'R');
+
+            //Page number
+            $this->Cell($PageCellSize,$this->FontSize+2,$t['p'],0,1,'R');
+        }
+
+        //Grab it and move to selected location
+        $n=$this->page;
+        $n_toc = $n - $tocstart + 1;
+        $last = array();
+
+        //store toc pages
+        for($i = $tocstart;$i <= $n;$i++)
+            $last[]=$this->pages[$i];
+
+        //move pages
+        for($i=$tocstart-1;$i>=$location-1;$i--)
+            $this->pages[$i+$n_toc]=$this->pages[$i];
+
+        //Put toc pages at insert point
+        for($i = 0;$i < $n_toc;$i++)
+            $this->pages[$location + $i]=$last[$i];
+    }
+
+    function Footer() {
+        if(!$this->_numberingFooter)
+            return;
+        //Go to 1.5 cm from bottom
+        $this->SetY(-15);
+        //Select Arial italic 8
+        $this->SetFont('Arial','I',8);
+        $this->Cell(0,7,$this->numPageNo(),0,0,'C'); 
+        if(!$this->_numbering)
+            $this->_numberingFooter=false;
+    }
+   
     function MultiCellBlt($w, $h, $blt, $txt, $border=0, $align='J', $fill=false)
     {
         //Get bullet width including margins
@@ -222,19 +311,23 @@ function NbLines($w,$txt)
         $this->Ln(4);
     }
 
+   
     function actividades(){
-        $this->AddPage('L');
+        $this->TOC_Entry('1.5 CRONOGRAMA DE ACTIVIDADES', 1);
         $this->ChapterTitle(1.5,'CRONOGRAMA DE ACTIVIDADES');
 
     }
 
     function metodologia(){
-        $column_widthM = ($this->GetPageWidth()-107);
+        $column_widthM = ($this->GetPageWidth()-20);
         $me = 'La metodología que se aplicaré en el presente proyecto para la ejecuciónde auditoría informática, no tiene un nombre definido ya que es una especie de estándar ';
         $me2 ='A continuación se describe la metodología, en una serie de pasos (tres etapas fundamentales) que sedebe ejecutar en el mismo orden que se presenta: ';
-        $this->AddPage('P');
+        $this->AddPage();
         $this->ChapterTitle(1.6,'METODOLOGIA TECNICAS Y HERRAMIENTAS');
+        $this->TOC_Entry('1.6 METODOLOGIAS TECNICAS Y HERRAMIENTAS', 1);
         $this->ChapterTitle('1.6.1','METODOLOGIA');
+        $this->TOC_Entry('1.6.1 METODOLOGIA', 2);
+       
         $this->SetFont('Times','',12);
         $this->MultiCell(0,5,utf8_decode($me));
         $this->ln();
@@ -278,7 +371,8 @@ function NbLines($w,$txt)
         $this->ln();
         $this->MultiCellBlt($column_widthM,5,chr(149),utf8_decode('E3.3: Presentar el informe de auditoría '));
         $this->ln();
-        $this->ChapterTitle('1.7.2: ',utf8_decode('TÉCNICAS'));
+        $this->ChapterTitle('1.6.2: ',utf8_decode('TÉCNICAS'));
+        $this->TOC_Entry('1.6.2 TECNICAS', 2);
         $this->SetFont('Times','',12);
         $this->MultiCell(0,5,utf8_decode('En este proyecto de auditoría se hará uso de las siguientes técnicas:'));
         $this->ln();
@@ -307,7 +401,10 @@ function NbLines($w,$txt)
         $id=$_REQUEST['id_proyecto'];
         $query2 = "SELECT * from introduccion where introduccion.id_proyecto = '$id' ";
         $res2 = mysqli_query($conexion, $query2);
+       
         $this->ChapterTitle(1.1,'INTRODUCCION');
+        $this->TOC_Entry('1.1 INTRODUCCION', 1);
+        
         // Times 12
         $this->SetFont('Times','',12);
         // Output justified text
@@ -323,7 +420,10 @@ function NbLines($w,$txt)
        // $this->SetFont('','I');
        // $this->Cell(0,5,'(end of excerpt)');
        $this->ChapterTitle(1.2,'ANTECEDENTES');
+       $this->TOC_Entry('1.2 ANTECEDENTES', 1);
+      
        $this->ChapterTitle('1.2.1','ANTECEDENTES DE LA INSTITUCION');
+       $this->TOC_Entry('1.2.1 ANTECEDENTES DE LA INSTITUCION', 2);
        $this->subtitulo('ASPECTO HISTORICO');
        $this->SetFont('Times','',12);
        $antecedente = "SELECT * from antecedentes where antecedentes.id_proyecto='$id'";
@@ -332,7 +432,7 @@ function NbLines($w,$txt)
         $this->MultiCell(0,5,$rowA['aspecto']);
         $this->ln(10);
         $this->tabla();
-        $this->Ln();
+        
         $this->subtitulo('MISION Y VISION INSTITUCIONAL');
         $this->subtitulo('MISION');
         $this->MultiCell(0,5,$rowA['mision']);
@@ -342,7 +442,9 @@ function NbLines($w,$txt)
         $this->Ln();
 
         $this->ChapterTitle(1.3,'ORIGENES');
-        $this->ChapterTitle('1.3.1','ANTECEDENTES DE LA INSTITUCION');
+        $this->TOC_Entry('1.3 ORIGENES', 1);
+        $this->ChapterTitle('1.3.1','ORIGEN DE AUDITORIA');
+        $this->TOC_Entry('1.3.1 ORIGEN DE LA AUDITORIA', 2);
         $this->SetFont('Times','',12);
         $origen = "SELECT * from origen where origen.id_proyecto='$id'";
         $ro = mysqli_query($conexion, $origen);
@@ -350,25 +452,30 @@ function NbLines($w,$txt)
         $this->MultiCell(0,5,$rowO['contenido']);
         $this->Ln();
         $this->ChapterTitle('1.3.2','VISITA PRELIMINAR');
+        $this->TOC_Entry('1.3.2 VISITA PRELIMINAR', 2);
         $visita = "SELECT * from visita where visita.id_proyecto='$id'";
         $rv = mysqli_query($conexion, $visita);
         while($rowV = $rv -> fetch_assoc()){
-            $this->ChapterTitle('1.3.2.'.$con,$rowV['titulo']);
+        $this->ChapterTitle('1.3.2.'.$con,$rowV['titulo']);
+          $this->TOC_Entry('1.3.2.'.$con.' '.$rowV['titulo'], 3);
             $this->SetFont('Times','',12);
             $this->MultiCell(0,5,$rowV['contenido']);
             $this->Ln();
             $con++;
         }
         $this->ChapterTitle('1.3.3','OBJETIVOS DEL PROYECTO');
+        $this->TOC_Entry('1.3.3 OBJETIVOS DEL PROYECTO', 2);
         $this->SetFont('Times','',12);
         $general = "SELECT * from objetivog where objetivog.id_proyecto='$id'";
         $rg = mysqli_query($conexion, $general);
         $rowGe = $rg -> fetch_assoc();
         $this->ChapterTitle('1.3.3.1','OBJETIVO GENERAL');
+        $this->TOC_Entry('1.3.3.1 OBJETIVO GENERAL', 3);
         $this->SetFont('Times','',12);
         $this->MultiCell(0,5,$rowGe['contenido']);
         $this->Ln();
         $this->ChapterTitle('1.3.3.1','OBJETIVOS ESPECIFICOS');
+        $this->TOC_Entry('1.3.3.2 OBJETIVOS ESPECIFICOS', 3);
         $this->SetFont('Times','',12);
         $especifico = "SELECT * from objetivoe where objetivoe.id_proyecto='$id'";
         $re = mysqli_query($conexion, $especifico);
@@ -382,7 +489,9 @@ function NbLines($w,$txt)
         $texto = 'Para cumplir con el objetivo de esta auditoría informáticase llevará a cabo la evaluación de  los siguientes puntos: ';
      
         $this->ChapterTitle('1.4','DETERMINAR LOS PUNTOS A SER EVALUADOS');
+        $this->TOC_Entry('1.4 DETERMINAR LOS PUNTOS A SER EVALUADOS', 1);
         $this->SetFont('Times','',12);
+        $this->SetTextColor(0,0,0);
         $this->MultiCell(0,5,utf8_decode($texto));
         $this->ln();
         $puntos = " SELECT * FROM puntos where puntos.id_proyecto='$id'";
@@ -391,12 +500,14 @@ function NbLines($w,$txt)
             $this->MultiCellBlt($column_width,5,chr(149),$rowP['contenido']);
             $this->Ln();
         }
-
-        $this -> actividades();
+        
+        $this->addpage();
+       $this->actividades();
         $this-> metodologia();
         $this -> ln();
         
         $this->ChapterTitle('1.6.3','HERRAMIENTAS');
+        $this->TOC_Entry('1.6.3 HERRAMIENTAS', 2);
         $this->SetFont('Times','',12);
         $this->MultiCell(0,5,utf8_decode('En este proyecto de hará el uso de las siguientes herramientas: '));
         $this -> ln();
@@ -411,7 +522,9 @@ function NbLines($w,$txt)
         $this->tablaguia();
         $this-> ln();
         $this->ChapterTitle('1.8','ASIGNACION DE RECURSOS PARA LA AUDITORIA');
+        $this->TOC_Entry('1.8 ASIGNACION DE RECURSOS PARA LA AUDITORIA', 1);
         $this->ChapterTitle('1.8.1','RECURSOS TECNICOS');
+        $this->TOC_Entry('1.8.1 RECURSOS TECNICOS', 2);
         $this->SetFont('Times','',12);
         $this->MultiCell(0,5,utf8_decode('Se utilizaran los siguientes recursos técnicos: '));
         $this-> ln();
@@ -423,6 +536,7 @@ function NbLines($w,$txt)
         }
 
         $this->ChapterTitle('1.8.2','RECURSOS ECONOMICOS');
+        $this->TOC_Entry('1.8.2 RECURSOS ECONOMICOS', 2);
         $this->SetFont('Times','',12);
         $this->MultiCell(0,5,utf8_decode('La siguiente tabla demuestra la derogación de los gastos quegenera para la elaboraciónde este proyecto de auditoría. '));
         $this-> ln();
@@ -448,7 +562,8 @@ function NbLines($w,$txt)
     $this->SetTextColor(255,255,255);
     $this->Cell(70,7,'COSTO TOTAL ',1,0,'C',true);
     $this->Cell(70,7,$sumaEco,1,1,'C',true);
-       
+     
+   
        
         
 
@@ -512,6 +627,11 @@ function NbLines($w,$txt)
     $this->SetTextColor(0,0,0);
     $this->Cell(70,7,$rowG['fax'],1,1,'C',0);
 
+    $this->ln();
+    $this-> TituloTabla('UBICACION GEOGRAFICA');
+    $this->SetX(55);
+    $this->Cell(100,75,$this->Image('../upload/'.$rowG['imagen'],$this->GetX(),$this->GetY(),100),0,1,'C');
+
     }
 
 
@@ -520,6 +640,7 @@ function NbLines($w,$txt)
         include("Conexion.php") ;
         $id=$_REQUEST['id_proyecto'];
         $this->ChapterTitle('1.7','GUIAS DE AUDITORIA');
+        $this->TOC_Entry('1.7 GUIAS DE AUDITORIA', 1);
         $guia = "SELECT * from guia where guia.id_proyecto='$id' ";
         $rguia = mysqli_query($conexion, $guia);
         while($rowGuia = $rguia->fetch_assoc()){
@@ -537,20 +658,271 @@ function NbLines($w,$txt)
 
 
     }
+// modulo de ejecucion
+function Rubrica(){
+    include("Conexion.php") ;
+    $id=$_REQUEST['id_proyecto'];
+    $this -> AddPage();
+    $this->ChapterTitle('1.2','RUBRICA DE EVALUACION');
+    $this->TOC_Entry('1.2 RUBRICA DE EVALUACION', 1);
+  
+    $this->SetFont('Times','',12);
+    $this->SetFillColor(0,0,0);
+    $this->SetTextColor(255,255,255);
+    $this->Cell(95,7,'Estado',1,0,'C',true);
+    $this->Cell(95,7,'Porcentaje',1,1,'C',true);
+    $this->SetFillColor(58, 191, 86 );
+    $this->SetTextColor(255,255,255);
+    $this->Cell(95,7,'EXCELENTE',0,0,'C',true);
+    $this->Cell(95,7,'Porcentaje',0,1,'C',true);
+    $this->SetFillColor(114, 242, 140);
+    $this->SetTextColor(0,0,0);
+    $this->Cell(95,7,'MUY BUENO',0,0,'C',true);
+    $this->Cell(95,7,'Porcentaje',0,1,'C',true);
+    $this->SetFillColor(253, 136, 32 );
+    $this->SetTextColor(255,255,255);
+    $this->Cell(95,7,'BUENO',0,0,'C',true);
+    $this->Cell(95,7,'Porcentaje',0,1,'C',true);
+    $this->SetFillColor(255, 254, 43);
+    $this->SetTextColor(0,0,0);
+    $this->Cell(95,7,'REGULAR',0,0,'C',true);
+    $this->Cell(95,7,'Porcentaje',0,1,'C',true);
+    $this->SetFillColor(195, 58, 52);
+    $this->SetTextColor(255,255,255);
+    $this->Cell(95,7,'MALO',0,0,'C',true);
+    $this->Cell(95,7,'Porcentaje',0,1,'C',true);
+    $this->SetFillColor(0,0,0);
+    $this->SetTextColor(255,255,255);
+    $this->Cell(90,7,'Aspecto a evaluar',1,0,'C',true);
+    $this->Cell(50,7,'Porcentaje obtenido',1,0,'C',true);
+    $this->Cell(50,7,'Estado',1,1,'C',true);
+    $prom = 0;
+    $suma=0;
+    $promedio = 0;
+    $queryR = "SELECT * from rubrica where rubrica.id_proyecto='$id'";
+    $res = mysqli_query($conexion, $queryR);
+    while($rowRu=$res->fetch_assoc()){
+        $prom++;
+        $suma = $suma+$rowRu['porcentaje'];
+        $this->SetTextColor(0,0,0);
+        $this->Cell(90,7,$rowRu['estado'],'B',0,'C',0);
+        $this->SetTextColor(0,0,0);
+        $this->Cell(50,7,$rowRu['porcentaje'].'%','B',0,'C',0);
+        $this->SetTextColor(255,255,255);
+        if($rowRu['porcentaje']<= 100 and $rowRu['porcentaje'] >=95 ){
+            $this->SetFillColor(58, 191, 86 );
+            $this->Cell(50,7,'EXCELENTE','B',1,'C',true);
+        }elseif($rowRu['porcentaje']<= 94 and $rowRu['porcentaje'] >=90 ){
+            $this->SetFillColor(114, 242, 140);
+            $this->SetTextColor(0,0,0);
+            $this->Cell(50,7,'MUY BUENO','B',1,'C',true);
+        }elseif($rowRu['porcentaje']<= 89 and $rowRu['porcentaje'] >=75 ){
+            $this->SetFillColor(253, 136, 32 );
+            $this->Cell(50,7,'BUENO','B',1,'C',true);
+        }elseif($rowRu['porcentaje']<= 74 and $rowRu['porcentaje'] >=51 ){
+            $this->SetFillColor(255, 254, 43);
+            $this->SetTextColor(0,0,0);
+            $this->Cell(50,7,'REGULAR','B',1,'C',true);
+        }elseif($rowRu['porcentaje']<= 50 and $rowRu['porcentaje'] >=0 ){
+            $this->SetFillColor(195, 58, 52);
+            $this->Cell(50,7,'MALO','B',1,'C',true);
+        }
+      
+    }
+    if($prom==0){
+        $promedio='';
+    }else{
+
+   
+    $promedio= $suma/($prom);
+    }
+    $this->SetFillColor(0,0,0);
+    $this->Cell(50,7,'Promedio: ',1,0,'C',true);
+    $this->SetFillColor(255,255,255);
+    $this->SetTextColor(0,0,0);
+    $this->Cell(140,7,$promedio.'%',1,1,'C',true);
+}
+
+function desviaciones(){
+    $aux = 0;
+    include("Conexion.php") ;
+    $id=$_REQUEST['id_proyecto'];
+    $this->ChapterTitle(1.3,'DESVIACIONES');
+    $this->TOC_Entry('1.3 DESVIACIONES', 1);
+   
+   
+    $this->SetFillColor(0,0,0);
+    $this->SetTextColor(255,255,255);
+    $this->Cell(10,15,'#',1,0,'C',true);
+   $this->Cell(40,15,'SITUACIONES',1,0,'C',true);
+    $this->Cell(30,15,'CAUSAS',1,0,'C',true);
+    $this->Cell(30,15,'SOLUCION',1,0,'C',true);
+    $this->Cell(20,15,'FECHA',1,0,'C',true);
+    $this->Cell(30,15,'RESPONSABLE',1,0,'C',true);
+    $this->Cell(30,15,'EVIDENCIA',1,1,'C',true);
+    $queryEv = "SELECT * from desviacion where desviacion.id_proyecto='$id'";
+    $resEv = mysqli_query($conexion, $queryEv);
+    while($rowEv = $resEv->fetch_assoc()){
+        $aux++;
+        $this->SetTextColor(0,0,0);
+        $this->SetWidths(array(10,40,30,30,20,30,30));
+        $this->Row(array($aux,$rowEv['situacion'],$rowEv['causa'],$rowEv['solucion'],$rowEv['fecha'],$rowEv['responsable'],$rowEv['evidencia']));
+       
+    }
+    $this-> ln();
+
+}
 
 
 
 
+function ChapterBodyE(){
+    include("Conexion.php") ;
+    $conexion->set_charset('utf8');
+    $column_width = ($this->GetPageWidth()-20);
+    $id=$_REQUEST['id_proyecto'];
+    $this->SetTextColor(0,0,0);
+    $this->ChapterTitle(1.1,'INTRODUCCION');
+    $this->TOC_Entry('1.1 INTRODUCCION', 1);
+    // Times 12
+    $this->SetFont('Times','',12);
+    // Output justified text
+    $this->MultiCell(0,5,utf8_decode('La ejecución es la etapa más importante d e la auditoría, ésta determinará si el trabajo alcanzó los objetivos establecidos en la planificación, es por esta razón que el desarrollo debe seguir una serie de pasos a cumplir de forma precisa.'));
+    $this-> ln();
+    $this->subtitulo('En el siguiente grafico se muestra los pasos a seguir:');
+    $this->ln();
+    $this->Rubrica();
+    $this->ln();
+    $queryau="SELECT * from elementos where elementos.id_proyecto = '$id'";
+    $resau = mysqli_query($conexion, $queryau);
+    while($rowAu=$resau->fetch_assoc()){
+        $idau = $rowAu['id_el'];
+        $this->SetTextColor(0,0,0);
+        $this->SetFont('Arial','',12);
+        $this->MultiCell(0,5,utf8_decode($rowAu['contenido']));
+        $this->TOC_Entry(utf8_decode($rowAu['contenido']), 2);
+        $this->ln();
+        $this->subtitulo('Alcance de la auditoria');
+        $this->TOC_Entry('Alcance de la auditoria', 3);
+        $queryalc = "SELECT * from alcance where alcance.id_el='$idau' and alcance.id_proyecto='$id'";
+        $resalc = mysqli_query($conexion, $queryalc);
+        while($rowalc = $resalc->fetch_assoc()){
+            $this->MultiCellBlt($column_width,5,chr(149),utf8_decode($rowalc['contenido']));
+            $this->ln();
+        }
+        $this->subtitulo('Objetivos de la auditoria');
+        $this->TOC_Entry('Objetivos de la auditoria', 3);
+        $queryobj= "SELECT * from objetivoa where objetivoa.id_el='$idau' and objetivoa.id_proyecto='$id'";
+        $resobja= mysqli_query($conexion, $queryobj);
+        while($rowobja = $resobja->fetch_assoc()){
+            $this->MultiCellBlt($column_width,5,chr(149),utf8_decode($rowobja['contenido']));
+            $this->ln();
+        }
+        $this->subtitulo('Informe de auditoria');
+        $this->TOC_Entry('Informe de auditoria', 3);
+        $queryinf = "SELECT * from informe where informe.id_el='$idau' and informe.id_proyecto='$id'";
+        $resinf = mysqli_query($conexion, $queryinf);
+        while($rowinf = $resinf->fetch_assoc()){
+            $this->MultiCellBlt($column_width,5,chr(149),utf8_decode($rowinf['contenido']));
+            $this->ln();
+        }
+    }
+    $this-> desviaciones();
+    
+}
+function ChapterBodyD(){
+    include("Conexion.php") ;
+    $id=$_REQUEST['id_proyecto'];
+    $this->TituloTabla('DICTAMEN');
+    $this->TOC_Entry('DICTAMEN DE LA AUDITORIA', 1);
+    $this->ln();
+    $queryDic="SELECT * from dictamen where dictamen.id_proyecto='$id'";
+    $resDic=mysqli_query($conexion, $queryDic);
+    $rowDic= $resDic->fetch_assoc();
+    $this->multicell(0,5,'PARA:'.$rowDic['para']);
+    $this->ln();
+    $this->multicell(0,5,'DE: '.$rowDic['de']);
+    $this->ln();
+    $this->multicell(0,5,'PROYECTO: '.$rowDic['proyecto']);
+    $this->ln();
+    $this->multicell(0,10,'FECHA: '.$rowDic['fecha'],'B');
+    $this->ln();
+    $this->MultiCell(0,5,$rowDic['contenido']);
+    $this->tableConclusion();
+
+}
+function tableConclusion(){
+    include("Conexion.php") ;
+    $id=$_REQUEST['id_proyecto'];
+    $con=0;
+    $this->addpage();
+    $this->SetFont('Times','',12);
+    $this->SetFillColor(0,0,0);
+    $this->SetTextColor(255,255,255);
+    $this->Cell(10,7,'N#',1,0,'C',true);
+    $this->Cell(45,7,'TAREA',1,0,'C',true);
+    $this->Cell(45,7,'CONCLUSIONES',1,0,'C',true);
+    $this->Cell(45,7,'SOLUCIONES',1,0,'C',true);
+    $this->Cell(45,7,'RECOMENDACIONES',1,1,'C',true);
+    $queryConclu="SELECT * from conclusion where conclusion.id_proyecto='$id'";
+    $resConclu=mysqli_query($conexion, $queryConclu);
+    while($rowConclu = $resConclu->fetch_assoc()){
+        $con++;
+        $this->SetTextColor(0,0,0);
+        $this->SetWidths(array(10,45,45,45,45));
+        $this->Row(array($con,$rowConclu['tarea'],$rowConclu['con'],$rowConclu['sol'],$rowConclu['recomendacion']));
+    }
+    
+}
+
+
+    function caratula(){
+        include("Conexion.php") ;
+        $id=$_REQUEST['id_proyecto'];
+        $this->TituloApendice('AUDITORIA INFORMATICA');
+        $queryPro = "SELECT * from proyecto where proyecto.id_proyecto='$id'";
+        $resPro = mysqli_query($conexion,$queryPro);
+        $rowPro = $resPro->fetch_assoc();
+     
+        $this->Cell(190,150,$this->Image('../upload/'.$rowPro['imagen'],30,50,150),0,1,'C');
+        $this->SetX(70);
+    $this->SetFont('Times','',12);
+   
+    $this->SetTextColor(0,0,0);
+    $this->Cell(70,7,'Nombre Auditor: Carlos Aguilar',0,1,'C',0);
+    $this->SetX(70);
+    $this->Cell(70,7,'Nombre Empresa: NextOne',0,1,'C',0);
+    $this->SetX(70);
+    $this->Cell(70,7,'Cochabamba-Bolivia',0,1,'C',0);
+
+    }
 
 
     
 
     function PrintChapter($title)
     {
-        $this->AddPage();
+        $this->TOC_Entry('Apendice P', 0);
         $this->TituloApendice($title);
       
         $this->ChapterBody();
+    }
+    function PrintChapterE($title){
+
+        $this->Addpage();
+        $this->TOC_Entry('Apendice E', 0);
+        $this->SetTextColor(0,0,0);
+   
+        $this->TituloApendice($title);
+        $this->ChapterBodyE();
+    }
+    function PrintChapterD($title){
+        $this->Addpage();
+        $this->TOC_Entry('Apendice D', 0);
+        $this->SetTextColor(0,0,0);
+   
+        $this->TituloApendice($title);
+        $this->ChapterBodyD();
     }
     }
 
@@ -560,10 +932,18 @@ function NbLines($w,$txt)
 
     
     $pdf = new PDF();
- 
-
-    $pdf->PrintChapter('PLANEACION DE LA AUDITORIA');
     
+    $pdf->SetFont('Times','',12);
+    $pdf->AddPage();
+    $pdf->caratula();
+    $pdf->addpage();
+    $pdf->startPageNums();
+    $pdf->PrintChapter('PLANEACION DE LA AUDITORIA');
+    $pdf->PrintChapterE('EJECUCION DE LA AUDITORIA');
+    $pdf->PrintChapterD('DICTAMEN DE LA AUDITORIA');
+    $pdf->stopPageNums();
+    $pdf->SetTextColor(0,0,0);
+    $pdf->insertTOC(2);
    
     $pdf->Output();
 

@@ -1,8 +1,9 @@
 <!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-dark primary-color">
+<!--Navbar-->
+<nav class=" navbar fixed-top navbar-toggleable-md navbar-expand-lg scrolling-navbar navbar-light default-color">
 
   <!-- Navbar brand -->
-  <a class="navbar-brand" href="#">Navbar</a>
+  <a class="navbar-brand text-black" style="font-family:monospace;font-size:20px;" href="#">Auditoria</a>
 
   <!-- Collapse button -->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
@@ -11,41 +12,24 @@
   </button>
 
   <!-- Collapsible content -->
-  <div class="collapse navbar-collapse" id="basicExampleNav">
+  <div class="collapse navbar-collapse justify-content-end" id="basicExampleNav">
 
     <!-- Links -->
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home
+    <ul class="navbar-nav ">
+      <li class="nav-item ">
+        <a class="nav-link" style="font-family:'lucida calligraphy','Arial';font-size:15px;" href="index.php">Inicio
           <span class="sr-only">(current)</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="ListaProyectos.php">Proyectos</a>
+        <a class="nav-link" style="font-family:'lucida calligraphy','Arial';font-size:15px;" href="ListaProyectos.php">Proyectos</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="NuevoProyecto.php">Nuevo Proyecto</a>
+        <a class="nav-link" style="font-family:'lucida calligraphy','Arial';font-size:15px;" href="NuevoProyecto.php">Nuevo Proyecto</a>
       </li>
 
-      <!-- Dropdown -->
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">Dropdown</a>
-        <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
 
     </ul>
-    <!-- Links -->
-
-    <form class="form-inline">
-      <div class="md-form my-0">
-        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-      </div>
-    </form>
   </div>
   <!-- Collapsible content -->
 

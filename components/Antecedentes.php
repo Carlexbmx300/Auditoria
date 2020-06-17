@@ -32,8 +32,8 @@ $row= $respuesta->fetch_array();
             else
             {
             ?>
-                <div class="row">
-                    <form action="components/ProcesoCrearAntecedente.php" method="post">
+                <div class="row ml-5">
+                    <form action="components/ProcesoCrearAntecedente.php" method="post" enctype="multipart/form-data">
                         <div class="md-form ml-5">
                             <textarea id="form7" class="md-textarea form-control" rows="3" name="aspecto"></textarea>
                             <label for="form7">Aspecto historico de la empresa</label>
@@ -70,6 +70,14 @@ $row= $respuesta->fetch_array();
                             <div class="md-form">
                             <input type="text" id="form1" class="form-control" name="fax" required>
                             <label for="form1">Fax</label>
+                            </div>
+                            <div class="input-file float-left ml-n3">
+                            <input type="file" ref="file" name="imagen" id="file">
+                            <p  id="texto" for="file">Subir Ubicacion</p>
+                            </div>      
+
+                            <div class="preview" id="preview">
+            
                             </div>
                             <input type="hidden" value="<?php echo $id ?>" name="ida">
                         <button type="submit" class="btn btn-success">ENVIAR</button>
