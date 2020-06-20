@@ -13,28 +13,141 @@
     <title>Document</title>
 </head>
 <body>
-<header class="her">
-     <div class="conten-title text-center wow bounceInRight" alt="Transparent MDB logo" id="animated-img1">
-  <h1 style="font-family:'lucida calligraphy','Arial';font-size:40px;">Avanza <br>en tu proyecto</h1>
-  <p >Es una herramientoas para gestionar tus proyectos</p>
-</div>
-    <svg class="waves-11" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
-      <defs>
-        <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
-      </defs>
-      <g class="waves">
-        <use xlink:href="#gentle-wave" x="48" y="0" fill="rgb(0, 192, 192)" />
-        <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(36, 212, 218, 0.637)" />
-        <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(3, 133, 150, 0.3)" />
-        <use xlink:href="#gentle-wave" x="48" y="7" fill=" rgb(0, 165, 165)" />
-      </g>
-    </svg>
-    </header>
+
    
     <?php
-    include('components/Navbar.php');
+    include('components/Nav_index.php');
    ?>
 
+  <div class="mid pt-5">
+    <!--Carousel Wrapper-->
+<!--<div id="carousel-example-2" class="carousel slide " data-ride="carousel">
+ 
+  <ol class="carousel-indicators">
+    <li data-target="#carousel-example-2" data-slide-to="0" class="active"></li>
+    <li data-target="#carousel-example-2" data-slide-to="1"></li>
+    <li data-target="#carousel-example-2" data-slide-to="2"></li>
+  </ol>
+ 
+  <div class="carousel-inner" role="listbox">
+    <div class="carousel-item active">
+      <div class="view">
+        <img class="d-block w-100" src="upload/fondo.jpg"
+          alt="First slide">
+        <div class="mask rgba-black-light"></div>
+      </div>
+      <div class="carousel-caption mb-5 mt-n5">
+        <h3 class="h3-responsive text-left">Light mask</h3>
+        <p>First text</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+   
+     
+      <div class="view">
+        <img class="d-block w-100" src="upload/fondo3.jpg"
+          alt="Second slide">
+        <div class="mask rgba-black-strong"></div>
+      </div>
+      <div class="carousel-caption">
+        <h3 class="h3-responsive ">Strong mask</h3>
+        <p>Secondary text</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+    
+      <div class="view">
+        <img class="d-block w-100 " src="upload/fondo2.jpg"
+          alt="Third slide">
+        <div class="mask rgba-black-slight"></div>
+      </div>
+      <div class="carousel-caption">
+        <h3 class="h3-responsive">Slight mask</h3>
+        <p>Third text</p>
+      </div>
+    </div>
+  </div>
+  
+  <a class="carousel-control-prev" href="#carousel-example-2" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carousel-example-2" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+  <
+</div>
+
+</div>-->
+
+  <div class="cards row  pt-5 pb-5">
+    <div class="col col-xl-7 align-self-center">
+
+    <h1 class="ml-xl-5 mid-text">ADMINISTRA TUS PROYECTOS DE UNA MANERA UNICA</h1>
+
+    </div>
+    <div class="col col-xl-4 col-12">
+    <div class="card card-cascade ">
+
+<!-- Card image -->
+    <div class="view view-cascade overlay">
+      <img class="card-img-top" src="upload/uni4.png" alt="Card image cap">
+      <a>
+        <div class="mask rgba-white-slight"></div>
+      </a>
+    </div>
+
+<!-- Card content -->
+<div class="card-body card-body-cascade text-center">
+
+  <!-- Title -->
+  <h4 class="card-title mt-n5 position-relative h4-responsive"><strong>AUDITORIA INFORMATICA</strong></h4>
+  <!-- Subtitle -->
+  <div class="sub">
+  <h6 class=" indigo-text py-2"><i class="far fa-clipboard fa-2x float-left"></i>VISTA PREVIA</h6>
+  </div>
+  <div class="sub">
+  <h6 class=" indigo-text py-2"><i class="far fa-file-alt fa-2x float-left"></i>CONTENIDO</h6>
+  </div>
+  <div class="sub">
+  <h6 class=" indigo-text py-2"><i class="far fa-edit fa-2x float-left"></i>MODIFICAR</h6>
+  </div>
+  <div class="sub">
+  <h6 class=" indigo-text py-2"><i class="far fa-file-excel fa-2x float-left"></i></i>ELIMINAR</h6>
+  </div>
+  <!-- Text -->
+
+</div>
+
+<!-- Card footer -->
+<div class="card-footer text-muted text-center">
+  Progreso actual 30%
+</div>
+
+</div>
+</div>
+  </div>
+  </div>
+
+<div class="login">
+  <div class="row pt-5 pb-5">
+    <div class="col-xl-6 align-self-center">
+    <?php
+      include('components/Registro.php');
+    ?>
+    </div>
+    <div class="col-xl-6 align-self-center text-center text-xl-left ">
+    <h1 class="ml-xl-5 ">INICIA SESION PARA EMEPEZAR A MANEJAR TUS PROYECTOS DE UNA MANERA FACIL, AGIL y CORRECTA</h1>
+    </div>
+  </div>
+
+
+ <?php
+ include('components/Footer.php');
+ ?>
+
+</div>
 <script type="text/javascript" src="node_modules/mdbootstrap/js/jquery.min.js"></script>
 <script type="text/javascript" src="node_modules/mdbootstrap/js/popper.min.js"></script>
 <script type="text/javascript" src="node_modules/mdbootstrap/js/bootstrap.min.js"></script>

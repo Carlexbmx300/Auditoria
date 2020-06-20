@@ -1,7 +1,123 @@
 body{
-    background: #dbdbdb;
+	background: #FFF;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
+
+.navbar{
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	background-color: #fff !important;
+}
+.navbar-nav{
+	background-color: #FFF;
+}
+.navbar .na{
+	font-weight: bold;
+	color: #00EBEE;
+}
+
+.nav-item{
+	text-align: center;
+	height: 63px;
+	transition: all ease .4s;	
+	background-color: #FFF !important;
+}
+.navbar{
+	height: 63px !important;
+}
+
+.carousel{
+	box-shadow: 0px 10px 15px -5px rgba(0,0,0,0.7) !important;
+}
+
+.carousel-item{
+	height: 600px;
+}
+.cards{
+	
+	width: 101% !important;
+	background-image:  linear-gradient(
+		rgba(0, 0, 0, 0.55),
+		rgba(0, 0, 0, 0.55)
+	  ),
+	  url('../upload/fondomid.jfif');
+	
+	background-size: 100%;
+	background-repeat: no-repeat;
+	box-shadow: 0px 10px 15px -5px rgba(0,0,0,0.7) !important;
+}
+.mid-text{
+	color: white;
+}
+.reg{
+	padding-top: 40px;
+	padding-bottom: 30px;
+	background-color: white;
+	padding-left: 100px;
+	padding-right: 100px;
+	border-radius: 10px;
+}
+.regi{
+	padding-top: 150px !important;
+	padding-bottom: 30px;
+}
+.card{
+	width: 70%;
+	margin-left: 15%;
+}
+.cards .view .mask{
+	height: 300px !important;
+}
+.card-img-top{
+	height: 300px !important;
+	box-shadow: 0px 10px 15px -5px rgba(0,0,0,0.65) !important; 
+
+}
+.card-title{
+	line-height: 40px;
+	height: 40px;
+	background-color: #00EBEE !important;
+	border-radius: 10px;
+	box-shadow: 0px 10px 15px -5px rgba(0,0,0,0.65) !important; 
+}
+.log{
+	width: 60%;
+	margin-left: 20%;
+}
+.login h1{
+	color: black;
+}
+
+.far{
+	color: #00EBEE;
+}
+.sub{
+	border-bottom: 3px dashed #94E32D;
+
+}
+
+.sub h6 {
+	color: black !important;
+}
+
+.footer{
+	background-color: #00EBEE;
+	height: 300px;
+}
+
+.btnlog{
+	background-color: #94E32D !important;
+}
+.nav-item:hover {
+	background-color: #00EBEE;
+	transition: all ease .4s;
+	
+}
+
+.nav-item a{
+	line-height: 49px;
+}
 .her{
 	position: relative;
 	height: 100vh;
@@ -44,5 +160,23 @@ body{
 .waves use:nth-child(4){
 	animation-delay: -5s;
 	animation-duration: 20s;
+}
+
+@media(max-width:767px) {
+	.carousel-item{
+		height: 270px;
+	}
+	.carousel-item img{
+		height: 270px;
+	}
+	.card{
+		width: 100%;
+		margin-left: 4.5%;
+	}
+
+
+	.cards{
+		width: 100%;
+	}
 }
 

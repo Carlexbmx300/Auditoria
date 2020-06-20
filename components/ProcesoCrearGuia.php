@@ -12,19 +12,21 @@ $tecnica = $_POST['tecnica'];
 $porcentaje = $_POST['porcentaje'];
 $observacion = $_POST['observacion'];
 
-$query = "INSERT into guia(codigo, punto, guia, actividad, procedimiento, herramienta, tecnica,  porcentaje, observacion, id_proyecto) values ('$codigo','$punto','$guia','$actividad','$procedimiento','$herramienta','$tecnica','$porcentaje','$observacion','$id')";
-$res = mysqli_query($conexion, $query);
-if (!$res){
-    echo 'no se inserto';
 
-}
-else{
-    echo "<script>
-    alert('se guardo');
-    window.location.href='../ListaProyectos.php';
-    </script>";
+            $query = "INSERT into guia(codigo, punto, guia, actividad, procedimiento, herramienta, tecnica,  porcentaje, observacion, id_proyecto) values ('$codigo','$punto','$guia','$actividad','$procedimiento','$herramienta','$tecnica','$porcentaje','$observacion','$id')";
+            $res = mysqli_query($conexion, $query);
+            if (!$res){
+                echo 'no se inserto';
 
-}
+            }
+            else{
+                echo "<script>
+                alert('se guardo');
+                window.location.href='../ListaProyectos.php';
+                </script>";
 
+            }
+    
+      
 
 ?>

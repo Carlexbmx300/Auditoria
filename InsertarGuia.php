@@ -13,6 +13,7 @@ $id = $_REQUEST['id_proyecto'];
 <link rel="stylesheet" href="node_modules/mdbootstrap/css/mdb.min.css">
 <link rel="stylesheet" href="node_modules/mdbootstrap/css/style.css">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/index.css">
     <title>Document</title>
 </head>
 <body>
@@ -64,8 +65,9 @@ $id = $_REQUEST['id_proyecto'];
                             <textarea id="form7" class="md-textarea form-control" rows="2" name="observacion"></textarea>
                             <label for="form7">Observaciones</label>
                             </div>
+                            
 
-                             <input type="text" name="ida" value="<?php echo $id; ?>">       
+                             <input type="hidden" name="ida" value="<?php echo $id; ?>">       
                             <button type="submit" class="btn btn-success">ENVIAR</button>
 
 

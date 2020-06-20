@@ -1,5 +1,7 @@
 <?php
 include('Conexion.php');
+
+
 $id = $_REQUEST['id_proyecto'];
 $query= "SELECT count(introduccion.id_proyecto) from introduccion where introduccion.id_proyecto='$id'";
 $respuesta = mysqli_query($conexion, $query);
@@ -17,6 +19,10 @@ $row= $respuesta->fetch_array();
         <div class="accordion-item-body-content">
         <?php
         if($row[0]>0){
+        $pro=0;
+        $valor=9;
+        $progress->suma($valor,$id);
+     
         ?>
             <div class="row">
                 <div class="col-xl-6 col-4">

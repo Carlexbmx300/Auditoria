@@ -2,6 +2,7 @@
 include("Conexion.php");
 $nombre=$_POST['nombre'];
 $numero = $_POST['numero'];
+$idu=$_POST['idu'];
 
 
 
@@ -32,7 +33,7 @@ $numero = $_POST['numero'];
            
 
 
-$sql = "INSERT into proyecto (nombre, imagen) values ('$nombre', '$nombrefinal')";
+$sql = "INSERT into proyecto (nombre, imagen, id_usuario) values ('$nombre', '$nombrefinal','$idu')";
 $res = mysqli_query($conexion, $sql);
 if(!$res){
     echo "no se inserto";

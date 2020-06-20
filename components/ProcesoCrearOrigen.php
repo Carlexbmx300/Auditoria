@@ -13,10 +13,26 @@ $query2 = "INSERT into objetivog (contenido, id_proyecto) values ('$general','$i
 $res2 = mysqli_query($conexion, $query2);
 
 for($i = 1; $i <= $numV ; $i++){
-    $titulo = $_POST['titulo'.$i];
-    $contenido = $_POST['observacion'.$i];
-    $query3 = "INSERT into visita(titulo, contenido, id_proyecto) values ('$titulo', '$contenido', '$id')";
-    $res3 = mysqli_query($conexion, $query3);
+    if(is_uploaded_file($_FILES["imagen".$i]["tmp_name"])) { 
+     
+     
+        // creamos las variables para subir a la db
+          $ruta = "../upload/"; 
+          $nombrefinal= trim ($_FILES["imagen".$i]["name"]); //Eliminamos los espacios en blanco
+         
+         
+          //$nombrefinala= preg_replace(" ","", $nombrefinal );//Sustituye una expresión regular
+          $upload= $ruta . $nombrefinal;  
+  
+  
+  
+          if(move_uploaded_file($_FILES["imagen".$i]["tmp_name"], $upload)) {
+                $titulo = $_POST['titulo'.$i];
+                $contenido = $_POST['observacion'.$i];
+                $query3 = "INSERT into visita(titulo, contenido,imagen, id_proyecto) values ('$titulo', '$contenido','$nombrefinal', '$id')";
+                $res3 = mysqli_query($conexion, $query3);
+          }
+        }    
 }
 
 for($j = 1 ;$j <= $numO ; $j++ ){

@@ -16,13 +16,15 @@ $row= $respuesta->fetch_array();
           
             <?php
             if($row[0]>0){
+                $valor=9;
+                $progress->suma($valor,$id);
             ?>
                 <div class="row">
                     <div class="col-xl-6 col-4">
                         <p class="mt-3">DICTAMEN INSERTADO</p>
                     </div>
                     <div class="col-xl-2 col-3">
-                        <a href="" class="btn btn-warning">MODIFICAR</a>
+                        <a href="ModificarDictamen.php?id_proyecto=<?php echo $id;?>" class="btn btn-warning">MODIFICAR</a>
                     </div>
                     <div class="col-xl-2 col-3">
                         <a href="" class="btn btn-danger">ELIMINAR</a>

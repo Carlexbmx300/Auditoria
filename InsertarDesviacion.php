@@ -27,7 +27,7 @@ $id = $_REQUEST['id_proyecto'];
         
             <div class="col-xl-6 offset-3 text-white">
 
-                <form action="components/ProcesoAgregarDesviacion.php" method="post">
+                <form action="components/ProcesoAgregarDesviacion.php" method="post" enctype="multipart/form-data">
                            
                             <div class="md-form">
                             <textarea id="form7" class="md-textarea form-control" rows="2" name="situacion"></textarea>
@@ -45,13 +45,17 @@ $id = $_REQUEST['id_proyecto'];
 
                             <div class="md-form">
                             <input type="text" id="form1" class="form-control" name="responsable" required>
-                            <label for="form1">Responable</label>
+                            <label for="form1">Responsable</label>
                             </div>
 
-                            <div class="md-form">
-                            <input type="text" id="form1" class="form-control" name="evidencia" required>
-                            <label for="form1">Evidencia</label>
-                            </div>
+                            <div class="input-file float-left ml-n3">
+                             <input type="file" ref="file" name="imagen" id="file">
+                    <p  id="texto" for="file">Subir evidencia</p>
+            </div>      
+
+            <div class="preview" id="preview">
+            
+            </div>
                             
 
                              <input type="text" name="ida" value="<?php echo $id; ?>">       

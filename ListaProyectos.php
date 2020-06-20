@@ -1,3 +1,23 @@
+
+<?php
+include('components/Conexion.php');
+session_start();
+
+
+
+$varsesion=$_SESSION['usuario'];
+if($varsesion == null || $varsesion = ''){
+    echo 'Usted no tiene autorizacion';
+    die();
+}
+
+$usuario = "SELECT * from usuario where user='$_SESSION[usuario]'";
+$resp = mysqli_query($conexion, $usuario);
+$row = $resp->fetch_assoc();
+$idu = $row['id_usuario'];
+$nombre=$row['nombre'];
+$apellido=$row['apellido'];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,66 +29,98 @@
 <link rel="stylesheet" href="node_modules/mdbootstrap/css/mdb.min.css">
 <link rel="stylesheet" href="node_modules/mdbootstrap/css/style.css">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/index.css">
+
 <link rel="stylesheet" href="css/listaProyectos.css">
     <title>Document</title>
 </head>
 <body>
     <?php
     include('components/Navbar.php');
+    include('Clases/Progreso.php');
+    $progres = new Progreso();
+    $pt = new ProgresoTotal();
+ 
+  
 
     ?>
-    <div class="container mt-5">
+
+        <div class="container-fluid mt-5 contenedor-list">
             <div class="row justify-content-xl-center">
-            <div class="col-xl-12 text-center">
-            <h1 style="font-family:'lucida calligraphy','Arial'">MIS PROYECTOS</h1>
-            </div>
-            </div>
-            </div>
-            <div class="row row-cols-1 row-cols-md-2">
-            <?php
-            include("components/Conexion.php");
-            $query="SELECT * from proyecto";
-            $resultado = mysqli_query($conexion, $query);
-
-            while($row=$resultado->fetch_assoc()){
-
-            $id= $row['id_proyecto'];
-            ?>
-             <div class="container item ">
-                <div class="box  mb-4">
-                    <div class="card ">
-                        <img src="upload/<?php echo $row['imagen'];?>" class="card-img-top" alt=""> 
-                    </div>
-                    <div class="content">
-                        <h4 class="card-title  text-center" style="color:black;font-family:Arial Black;"><?php echo $row['nombre'];?></h4>
-                        <div class="card-footer ">
-                            <h5 class="text-muted">INTEGRANTES</h5>
-                        </div>
-                            <?php
-                        $query2="SELECT * from integrante where integrante.id_proyecto='$id'";
-                        $resultado2= mysqli_query($conexion, $query2);
-                        while($row2 = $resultado2->fetch_assoc()){
-                            echo "<h4 class='card-text text-center'>".$row2['nombre']."</h4>";
-                        } 
-                        ?>
-                        <a  href="Contenido.php?id_proyecto=<?php echo $row['id_proyecto'];?>"class="btn blue-gradient  waves-effect mx-auto d-block"><i ></i>CONTENIDO</a></li>
-                        <a href="components/Documento.php?id_proyecto=<?php echo $row['id_proyecto'];?>" class="btn blue-gradient darken-4 mx-auto d-block"><i class="far fa-file-alt mr-2"></i>VISTA PREVIA</a></li>
-                        <a href="ModificarProyecto.php?id_proyecto=<?php echo $row['id_proyecto'];?>"class="btn blue-gradient mx-auto d-block"><i class="far fa-edit mr-2"></i>MODIFICAR</a>
-                        <a href=""class="btn blue-gradient mx-auto d-block" ><i class="fas fa-times mr-2" ></i>ELIMINAR</a></li>
-                    
-                    </div>
+                <div class="col-xl-12 text-center">
+                <h1>MIS PROYECTOS</h1>
                 </div>
             </div>
+            </div>
+            <div class="cards-list row">
+            <?php
+            include("components/Conexion.php");
+            $query="SELECT * from proyecto where id_usuario='$idu'";
+            $resultado = mysqli_query($conexion, $query);
+            $cona=0;
+            while($row=$resultado->fetch_assoc()){
+            $cona++;
+            $id= $row['id_proyecto'];
+           
+            ?>
+           
+ 
+            <div class="col col-xl-4 col-12 mb-5">
+                <div class="card card-cascade card-list">
+
+<!-- Card image -->
+                        <div class="view view-cascade overlay">
+                            <img class="card-img-top" src="upload/<?php echo $row['imagen'];?>" alt="Card image cap">
+                            <a>
+                                <div class="mask rgba-white-slight"></div>
+                            </a>
+                        </div>
+
+<!-- Card content -->
+                <div class="card-body card-body-cascade text-center">
+
+<!-- Title -->
+                        <h4 class="card-title mt-n5 position-relative h4-responsive"><strong><?php echo $row['nombre'];?></strong></h4>
+                        <!-- Subtitle -->
+                        <div class="sub">
+                        <h6 class=" indigo-text py-2"><i class="far fa-clipboard fa-2x float-left"></i> <a href="components/Documento.php?id_proyecto=<?php echo $row['id_proyecto'];?>"></i>VISTA PREVIA</a></li></h6>
+                        </div>
+                        <div class="sub">
+                        <h6 class=" indigo-text py-2"><i class="far fa-file-alt fa-2x float-left"></i>  <a  href="Contenido.php?id_proyecto=<?php echo $row['id_proyecto'];?>"><i ></i>CONTENIDO</a></li></h6>
+                        </div>
+                        <div class="sub">
+                        <h6 class=" indigo-text py-2"><i class="far fa-edit fa-2x float-left"></i><a href="ModificarProyecto.php?id_proyecto=<?php echo $row['id_proyecto'];?>"></i>MODIFICAR</a></h6>
+                        </div>
+                        <div class="sub">
+                        <h6 class=" indigo-text py-2"><i class="far fa-file-excel fa-2x float-left"></i></i> <a href="" ></i>ELIMINAR</a></li></h6>
+                        </div>
+<!-- Text -->
+
+                </div>
+
+<!-- Card footer -->
+                <div class="card-footer text-muted text-center">
+                Progreso : <?php echo $row['progreso'].'%'?>
+                </div>
+
+            </div>
+        </div>
 
 
 
-   <?php
-    }
-   ?>
 
-    </div>
 
-    
+
+            <?php
+                }
+            ?>
+</div>
+</div>
+
+<?php
+ include('components/Footer.php');
+ ?>
+  
 
 <script type="text/javascript" src="node_modules/mdbootstrap/js/jquery.min.js"></script>
 <script type="text/javascript" src="node_modules/mdbootstrap/js/popper.min.js"></script>

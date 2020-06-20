@@ -1,6 +1,12 @@
 <?php
 $id = $_REQUEST['id_proyecto'];
-
+$query= "SELECT count(conclusion.id_proyecto) from conclusion where conclusion.id_proyecto='$id'";
+$respuesta = mysqli_query($conexion, $query);
+$row= $respuesta->fetch_array();
+if($row[0]>0){
+    $valor=9;
+    $progress->suma($valor,$id);
+}
 ?>
 
 
@@ -17,7 +23,7 @@ $id = $_REQUEST['id_proyecto'];
                     <a href="InsertarConclusion.php?id_proyecto=<?php echo $id;?>" class="btn btn-success">INSERTAR</a>
                     </div>
                     <div class="col-xl-4 col-4">
-                        <a href="" class="btn btn-warning">MODIFICAR</a>
+                        <a href="ModificarConclusion.php?id_proyecto=<?php echo $id;?>" class="btn btn-warning">MODIFICAR</a>
                     </div>
                     <div class="col-xl-4 col-4">
                         <a href="" class="btn btn-danger">ELIMINAR</a>

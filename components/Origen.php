@@ -15,13 +15,15 @@ $row= $respuesta->fetch_array();
             <div class="accordion-item-body-content">
             <?php
             if($row[0]>0){
+            $valor=9;
+            $progress->suma($valor,$id);  
             ?>
                 <div class="row">
                     <div class="col-xl-6 col-4">
                         <p class="mt-3">ORIGEN INSERTADO</p>
                     </div>
                     <div class="col-xl-2 col-3">
-                        <a href="" class="btn btn-warning">MODIFICAR</a>
+                        <a href="ModificarOrigen.php?id_proyecto=<?php echo $id;?>" class="btn btn-warning">MODIFICAR</a>
                     </div>
                     <div class="col-xl-2 col-3">
                         <a href="" class="btn btn-danger">ELIMINAR</a>
@@ -34,7 +36,7 @@ $row= $respuesta->fetch_array();
             ?>
            
                 <div class="row">
-                    <form action="components/ProcesoCrearOrigen.php" method="post">
+                    <form action="components/ProcesoCrearOrigen.php" method="post" enctype="multipart/form-data">
                         <div class="md-form ml-5">
                             <textarea id="form7" class="md-textarea form-control" rows="3" name="origen"></textarea>
                             <label for="form7">Origen de la auditoria</label>

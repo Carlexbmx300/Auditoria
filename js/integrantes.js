@@ -45,7 +45,7 @@ $(document).ready(function (){
       var j = 0 ;
       $('#addV').click(function(){
         j++;
-        $('#dynamic_fieldV').append('<div id="visita'+j+'"> <div class="md-form"><input type="text" id="form1" class="form-control" name="titulo'+j+'" required><label for="form1">Titulo de visita</label></div><div class="md-form col-12"><textarea id="form7" name="observacion'+j+'" class="md-textarea form-control" rows="3"></textarea><label for="form7">Observacion</label></div><div>');
+        $('#dynamic_fieldV').append('<div id="visita'+j+'"> <div class="md-form"><input type="text" id="form1" class="form-control" name="titulo'+j+'" required><label for="form1">Titulo de visita</label></div><div class="md-form col-12"><textarea id="form7" name="observacion'+j+'" class="md-textarea form-control" rows="3"></textarea><label for="form7">Observacion</label></div><div class="input-file ml-5"><input type="file" ref="file" name="imagen'+j+'" id="file"><p  id="texto" for="file">Subir evidencia</p></div><div class="preview" id="preview"></div><div>');
         $('#numeroV').val(j) ;
  
       });

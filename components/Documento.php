@@ -12,9 +12,10 @@ require('../pdf/fdpf/fpdf.php');
 class PDF extends FPDF
 {
     
-
+    var $link;
     var $widths;
     var $aligns;
+ 
     function SetWidths($w)
 {
     //Set the array of column widths
@@ -190,14 +191,20 @@ function NbLines($w,$txt)
             $str=$t['t'];
             $this->SetFont($tocfont,$weight,$entrySize);
             $strsize=$this->GetStringWidth($str);
-            $this->Cell($strsize+2,$this->FontSize+2,$str);
+            if($strsize>180){
+            $this->MultiCell(150,$this->FontSize+2,$str);
+           
+            }else{
+                $this->Cell($strsize+2,$this->FontSize+2,$str);
+            }
+            
 
             //Filling dots
             $this->SetFont($tocfont,'',$entrySize);
             $PageCellSize=$this->GetStringWidth($t['p'])+2;
             $w=$this->w-$this->lMargin-$this->rMargin-$PageCellSize-($level*8)-($strsize+2);
             $nb=$w/$this->GetStringWidth('.');
-            $dots=str_repeat('.',$nb);
+            $dots=str_repeat('.',0);
             $this->Cell($w,$this->FontSize+2,$dots,0,0,'R');
 
             //Page number
@@ -313,8 +320,26 @@ function NbLines($w,$txt)
 
    
     function actividades(){
+       
+       
+       
+       $this->AddPage();
+        include("Conexion.php") ;
+        $id=$_REQUEST['id_proyecto'];
+        $crono="SELECT * FROM cronograma where cronograma.id_proyecto='$id'";
+        $rcrono=mysqli_query($conexion, $crono);
+        $rcrono2=mysqli_query($conexion, $crono);
+        $rowcrono=$rcrono->fetch_assoc();
+        $numcrono=$rcrono2->fetch_array();
         $this->TOC_Entry('1.5 CRONOGRAMA DE ACTIVIDADES', 1);
         $this->ChapterTitle(1.5,'CRONOGRAMA DE ACTIVIDADES');
+        if($numcrono[0]>0){
+            $this->Cell(100,75,$this->Image('../upload/'.$rowcrono['imagen'],$this->GetX(),$this->GetY(),190),0,1,'C');
+            $this->ln(2);
+        }
+       
+     
+
 
     }
 
@@ -404,13 +429,13 @@ function NbLines($w,$txt)
        
         $this->ChapterTitle(1.1,'INTRODUCCION');
         $this->TOC_Entry('1.1 INTRODUCCION', 1);
-        
+   
         // Times 12
         $this->SetFont('Times','',12);
         // Output justified text
         while($row = $res2->fetch_assoc()){
             $this->SetTextColor(0,0,0);
-            $this->MultiCell(0,5,$row['contenido']);
+            $this->MultiCell(0,5,utf8_decode($row['contenido']));
             $this->Ln(2);
         }
        
@@ -440,6 +465,12 @@ function NbLines($w,$txt)
         $this->subtitulo('VISION');
         $this->MultiCell(0,5,$rowA['vision']);
         $this->Ln();
+        $logo = "SELECT * from proyecto where id_proyecto='$id'";
+        $rlogo = mysqli_query($conexion, $logo);
+        $rowlogo = $rlogo->fetch_assoc();
+        $this-> TituloTabla('LOGO DE LA EMPRESA');
+        $this->SetX(65);
+        $this->Cell(100,75,$this->Image('../upload/'.$rowlogo['imagen'],$this->GetX(),$this->GetY(),80),0,1,'C');
 
         $this->ChapterTitle(1.3,'ORIGENES');
         $this->TOC_Entry('1.3 ORIGENES', 1);
@@ -489,6 +520,7 @@ function NbLines($w,$txt)
         $texto = 'Para cumplir con el objetivo de esta auditoría informáticase llevará a cabo la evaluación de  los siguientes puntos: ';
      
         $this->ChapterTitle('1.4','DETERMINAR LOS PUNTOS A SER EVALUADOS');
+        $this->ln();
         $this->TOC_Entry('1.4 DETERMINAR LOS PUNTOS A SER EVALUADOS', 1);
         $this->SetFont('Times','',12);
         $this->SetTextColor(0,0,0);
@@ -501,7 +533,7 @@ function NbLines($w,$txt)
             $this->Ln();
         }
         
-        $this->addpage();
+       
        $this->actividades();
         $this-> metodologia();
         $this -> ln();
@@ -562,7 +594,8 @@ function NbLines($w,$txt)
     $this->SetTextColor(255,255,255);
     $this->Cell(70,7,'COSTO TOTAL ',1,0,'C',true);
     $this->Cell(70,7,$sumaEco,1,1,'C',true);
-     
+   
+   
    
        
         
@@ -578,8 +611,18 @@ function NbLines($w,$txt)
     {
         include("Conexion.php") ;
         $id=$_REQUEST['id_proyecto'];
+    $gen2 = "SELECT count(id_proyecto) from generalidades where generalidades.id_proyecto='$id'";
+    $reGen2 = mysqli_query($conexion, $gen2);
     $gen = "SELECT * from generalidades where generalidades.id_proyecto='$id'";
     $rGen = mysqli_query($conexion,$gen);
+    $rowGEN = $reGen2->fetch_array();
+    if($rowGEN[0]==0){
+   
+        $this->Cell(50,7,'DATOS AUN NO INSERTADOS',0,1,'C',true);
+    }
+    else{
+
+    
     $rowG = $rGen -> fetch_assoc();
 
     $this-> TituloTabla('GENERALIDADES DE LA EMPRESA');
@@ -634,7 +677,7 @@ function NbLines($w,$txt)
 
     }
 
-
+    }
 
     function tablaguia(){
         include("Conexion.php") ;
@@ -643,6 +686,7 @@ function NbLines($w,$txt)
         $this->TOC_Entry('1.7 GUIAS DE AUDITORIA', 1);
         $guia = "SELECT * from guia where guia.id_proyecto='$id' ";
         $rguia = mysqli_query($conexion, $guia);
+    
         while($rowGuia = $rguia->fetch_assoc()){
            
             $this->SetWidths(array(130,50));
@@ -674,23 +718,23 @@ function Rubrica(){
     $this->SetFillColor(58, 191, 86 );
     $this->SetTextColor(255,255,255);
     $this->Cell(95,7,'EXCELENTE',0,0,'C',true);
-    $this->Cell(95,7,'Porcentaje',0,1,'C',true);
+    $this->Cell(95,7,'100-95',0,1,'C',true);
     $this->SetFillColor(114, 242, 140);
     $this->SetTextColor(0,0,0);
     $this->Cell(95,7,'MUY BUENO',0,0,'C',true);
-    $this->Cell(95,7,'Porcentaje',0,1,'C',true);
+    $this->Cell(95,7,'94-90',0,1,'C',true);
     $this->SetFillColor(253, 136, 32 );
     $this->SetTextColor(255,255,255);
     $this->Cell(95,7,'BUENO',0,0,'C',true);
-    $this->Cell(95,7,'Porcentaje',0,1,'C',true);
+    $this->Cell(95,7,'89-75',0,1,'C',true);
     $this->SetFillColor(255, 254, 43);
     $this->SetTextColor(0,0,0);
     $this->Cell(95,7,'REGULAR',0,0,'C',true);
-    $this->Cell(95,7,'Porcentaje',0,1,'C',true);
+    $this->Cell(95,7,'74-51',0,1,'C',true);
     $this->SetFillColor(195, 58, 52);
     $this->SetTextColor(255,255,255);
     $this->Cell(95,7,'MALO',0,0,'C',true);
-    $this->Cell(95,7,'Porcentaje',0,1,'C',true);
+    $this->Cell(95,7,'50-0',0,1,'C',true);
     $this->SetFillColor(0,0,0);
     $this->SetTextColor(255,255,255);
     $this->Cell(90,7,'Aspecto a evaluar',1,0,'C',true);
@@ -737,13 +781,15 @@ function Rubrica(){
     $promedio= $suma/($prom);
     }
     $this->SetFillColor(0,0,0);
+    $this->SetTextColor(255,255,255);
     $this->Cell(50,7,'Promedio: ',1,0,'C',true);
     $this->SetFillColor(255,255,255);
     $this->SetTextColor(0,0,0);
-    $this->Cell(140,7,$promedio.'%',1,1,'C',true);
+    $this->Cell(140,7,round($promedio,2).'%',1,1,'C',true);
 }
 
 function desviaciones(){
+   $anexo='';
     $aux = 0;
     include("Conexion.php") ;
     $id=$_REQUEST['id_proyecto'];
@@ -762,12 +808,19 @@ function desviaciones(){
     $this->Cell(30,15,'EVIDENCIA',1,1,'C',true);
     $queryEv = "SELECT * from desviacion where desviacion.id_proyecto='$id'";
     $resEv = mysqli_query($conexion, $queryEv);
+    
     while($rowEv = $resEv->fetch_assoc()){
-        $aux++;
+        if($rowEv['evidencia']!='N/A'){
+        $anexo='EN ANEXOS';
+       }
+       else{
+        $anexo='N/A';
+        
+       }
+       $aux++;
         $this->SetTextColor(0,0,0);
         $this->SetWidths(array(10,40,30,30,20,30,30));
-        $this->Row(array($aux,$rowEv['situacion'],$rowEv['causa'],$rowEv['solucion'],$rowEv['fecha'],$rowEv['responsable'],$rowEv['evidencia']));
-       
+        $this->Row(array($aux,$rowEv['situacion'],$rowEv['causa'],$rowEv['solucion'],$rowEv['fecha'],$rowEv['responsable'], $anexo));
     }
     $this-> ln();
 
@@ -777,9 +830,10 @@ function desviaciones(){
 
 
 function ChapterBodyE(){
+  
     include("Conexion.php") ;
     $conexion->set_charset('utf8');
-    $column_width = ($this->GetPageWidth()-20);
+    $column_width = ($this->GetPageWidth()-40);
     $id=$_REQUEST['id_proyecto'];
     $this->SetTextColor(0,0,0);
     $this->ChapterTitle(1.1,'INTRODUCCION');
@@ -790,7 +844,10 @@ function ChapterBodyE(){
     $this->MultiCell(0,5,utf8_decode('La ejecución es la etapa más importante d e la auditoría, ésta determinará si el trabajo alcanzó los objetivos establecidos en la planificación, es por esta razón que el desarrollo debe seguir una serie de pasos a cumplir de forma precisa.'));
     $this-> ln();
     $this->subtitulo('En el siguiente grafico se muestra los pasos a seguir:');
-    $this->ln();
+
+   
+    $this->SetX(40);
+    $this->Cell(130,100,$this->Image('../upload/diagrama.jpg',$this->GetX(),$this->GetY(),130),0,1,'C');
     $this->Rubrica();
     $this->ln();
     $queryau="SELECT * from elementos where elementos.id_proyecto = '$id'";
@@ -829,6 +886,7 @@ function ChapterBodyE(){
     }
     $this-> desviaciones();
     
+    
 }
 function ChapterBodyD(){
     include("Conexion.php") ;
@@ -850,6 +908,46 @@ function ChapterBodyD(){
     $this->MultiCell(0,5,$rowDic['contenido']);
     $this->tableConclusion();
 
+}
+
+function ChapterBodyA(){
+
+    include("Conexion.php");
+    $id=$_REQUEST['id_proyecto'];
+    $qvis="SELECT * FROM visita where visita.id_proyecto='$id'";
+    $resq = mysqli_query($conexion, $qvis);
+    $this->subtitulo('EVIDENCIAS VISITA PRELIMINAR');
+    $this->TOC_Entry('EVIDENCIAS VISITA PRELIMINAR', 1);
+    while($row = $resq->fetch_assoc()){
+        if($row['imagen']!=''){
+            $this->SetX(55);
+            $this->Cell(100,75,$this->Image('../upload/'.$row['imagen'],$this->GetX(),$this->GetY(),100),0,1,'C');
+            $this->ln(2);
+            $this->TituloTabla($row['titulo'].' fecha: '.$row['fecha']);
+        }
+        
+    }
+   
+
+}
+
+function ChapterBodyAB(){
+    include("Conexion.php");
+    $id=$_REQUEST['id_proyecto'];
+    $this->subtitulo('EVIDENCIAS DESVIACIONES');
+    $this->TOC_Entry('EVIDENCIAS DESVIACIONES', 1);
+    $evidencia = "SELECT * from desviacion where desviacion.id_proyecto='$id'";
+    $rEvidencia = mysqli_query($conexion, $evidencia);
+    while($row=$rEvidencia->fetch_assoc()){
+        $this->SetX(55);
+        if($row['evidencia']!='N/A'){
+
+        
+            $this->Cell(100,75,$this->Image('../upload/'.$row['evidencia'],$this->GetX(),$this->GetY(),100),0,1,'C');
+            $this->ln(2);
+            $this->TituloTabla( 'fecha: '.$row['fecha']);
+        }
+    }
 }
 function tableConclusion(){
     include("Conexion.php") ;
@@ -880,16 +978,17 @@ function tableConclusion(){
         include("Conexion.php") ;
         $id=$_REQUEST['id_proyecto'];
         $this->TituloApendice('AUDITORIA INFORMATICA');
-        $queryPro = "SELECT * from proyecto where proyecto.id_proyecto='$id'";
+        $queryPro = "SELECT usuario.nombre, usuario.apellido, proyecto.imagen from proyecto, usuario where proyecto.id_proyecto='$id' and proyecto.id_usuario=usuario.id_usuario";
         $resPro = mysqli_query($conexion,$queryPro);
         $rowPro = $resPro->fetch_assoc();
      
         $this->Cell(190,150,$this->Image('../upload/'.$rowPro['imagen'],30,50,150),0,1,'C');
+        $this->ln(40);
         $this->SetX(70);
     $this->SetFont('Times','',12);
    
     $this->SetTextColor(0,0,0);
-    $this->Cell(70,7,'Nombre Auditor: Carlos Aguilar',0,1,'C',0);
+    $this->Cell(70,7,'Nombre Auditor:'.$rowPro['nombre'].' '.$rowPro['apellido'],0,1,'C',0);
     $this->SetX(70);
     $this->Cell(70,7,'Nombre Empresa: NextOne',0,1,'C',0);
     $this->SetX(70);
@@ -903,16 +1002,21 @@ function tableConclusion(){
     function PrintChapter($title)
     {
         $this->TOC_Entry('Apendice P', 0);
+        
         $this->TituloApendice($title);
-      
+        $this->SetTextColor(0,0,0);
+       
         $this->ChapterBody();
+      
+        
     }
     function PrintChapterE($title){
 
-        $this->Addpage();
+       
+        $this->AddPage();
         $this->TOC_Entry('Apendice E', 0);
         $this->SetTextColor(0,0,0);
-   
+     
         $this->TituloApendice($title);
         $this->ChapterBodyE();
     }
@@ -924,23 +1028,45 @@ function tableConclusion(){
         $this->TituloApendice($title);
         $this->ChapterBodyD();
     }
+
+    function PrintChapterA($title){
+        $this->Addpage();
+        $this->TOC_Entry('Anexo A', 0);
+        $this->SetTextColor(0,0,0);
+   
+        $this->TituloApendice($title);
+        $this->ChapterBodyA();
     }
 
-    //mc_table
-
+    function PrintChapterAB($title){
+        $this->Addpage();
+        $this->TOC_Entry('Anexo B', 0);
+        $this->SetTextColor(0,0,0);
+   
+        $this->TituloApendice($title);
+        $this->ChapterBodyAB();
+    }
+}
 
 
     
     $pdf = new PDF();
-    
+  
     $pdf->SetFont('Times','',12);
     $pdf->AddPage();
     $pdf->caratula();
     $pdf->addpage();
     $pdf->startPageNums();
+ 
+  
+
     $pdf->PrintChapter('PLANEACION DE LA AUDITORIA');
     $pdf->PrintChapterE('EJECUCION DE LA AUDITORIA');
     $pdf->PrintChapterD('DICTAMEN DE LA AUDITORIA');
+  
+    $pdf->PrintChapterA('ANEXO A');
+    $pdf->PrintChapterAB('ANEXO B');
+
     $pdf->stopPageNums();
     $pdf->SetTextColor(0,0,0);
     $pdf->insertTOC(2);

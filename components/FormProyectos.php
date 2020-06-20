@@ -19,11 +19,11 @@
             <div class="preview" id="preview">
             
             </div>
-
+            <input type="hidden" value="<?php echo $id?>" name="idu">
             <button type="submit" class="btn btn-success">enviar</button>
         </div>
     </form>
 
-    <button><a href="components/Documento.php">vista previa de documento</a></button>
+  
 
 </div>
